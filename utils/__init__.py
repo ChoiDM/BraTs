@@ -96,6 +96,6 @@ def get_optimizer(net, criterion, opt):
 
 def get_loss_function(opt):
     if opt.loss == 'dice':
-        return DiceLoss()
+        return DiceLoss(sigmoid_normalization=False)
     else:
         raise ValueError("Only 'dice' loss is supported now.")

@@ -48,7 +48,6 @@ class DiceLoss(nn.Module):
 
         if sigmoid_normalization:
             self.normalization = nn.Sigmoid()
-
         else:
             self.normalization = nn.Softmax(dim=1)
         # if True skip the last channel in the target

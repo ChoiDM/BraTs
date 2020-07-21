@@ -60,15 +60,14 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
         loss = criterion(pred, mask)
 
         # Evaluation Metric Calcuation
-        dice_score = DiceCoef()(pred, mask)
+        dice_score = DiceCoef(sigmoid_normalization=False)(pred, mask)
 
         # Stack Results
         losses.update(loss.item(), img.size(0))
         dice.update(dice_score.item(), img.size(0))
 
-        if (it==0) or (it+1) % 10 == 0:
-            print('Epoch[%3d/%3d] | Iteration[%3d/%3d] | Loss %.4f | Dice %.4f'
-                % (epoch+1, opt.max_epoch, it+1, len(dataset_val), losses.avg, dice.avg))
+        print('Epoch[%3d/%3d] | Iteration[%3d/%3d] | Loss %.4f | Dice %.4f'
+            % (epoch+1, opt.max_epoch, it+1, len(dataset_val), losses.avg, dice.avg))
 
     print(">>> Epoch[%3d/%3d] Evalaution Loss : %.8f Dice %.4f" % (epoch+1, opt.max_epoch, losses.avg, dice.avg))
 

@@ -111,6 +111,7 @@ class DiceCoef(nn.Module):
             return per_channel_dice
         else:
             return torch.mean(per_channel_dice)
+            
 def flatten(tensor):
     """Flattens a given tensor such that the channel axis is first.
     The shapes are transformed as follows:
