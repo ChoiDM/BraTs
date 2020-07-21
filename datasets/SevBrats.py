@@ -16,7 +16,7 @@ class SevBraTsDataset3D(Dataset):
         self.augmentation = augmentation
         
         self.in_res = opt.in_res
-        self.in_depth = opt.in_dept
+        self.in_depth = opt.in_depth
 
         self.mean = np.array(opt.mean, dtype=np.float32)[:,None,None,None]
         self.std = np.array(opt.std, dtype=np.float32)[:,None,None,None]
