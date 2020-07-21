@@ -15,6 +15,9 @@ class SevBraTsDataset3D(Dataset):
         self.len = len(self.patientDirs)
         self.augmentation = augmentation
         
+        self.in_res = opt.in_res
+        self.in_depth = opt.in_dept
+
         self.mean = np.array(opt.mean, dtype=np.float32)[:,None,None,None]
         self.std = np.array(opt.std, dtype=np.float32)[:,None,None,None]
 
@@ -29,14 +32,14 @@ class SevBraTsDataset3D(Dataset):
 
         # Input Image (FLAIR, T1GD, T1, T2 order)
         imgs = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in img_paths]
-        imgs = [center_crop(img, opt.in_res, opt.in_res) for img in imgs]
-        imgs = [ResizeImage(img, (opt.in_res, opt.in_res, opt.in_depth)) for img in imgs]
+        imgs = [center_crop(img, self.in_res, self.in_res) for img in imgs]
+        imgs = [ResizeImage(img, (self.in_res, self.in_res, self.in_depth)) for img in imgs]
         imgs = [img[None, ...] for img in imgs]
 
         # Ground-truth Masks (NECRO, CE, Peri order)
         masks = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in mask_paths]
-        masks = [center_crop(mask, opt.in_res, opt.in_res) for mask in masks]
-        masks = [ResizeImage(mask, (opt.in_res, opt.in_res, opt.in_depth)) for mask in masks]
+        masks = [center_crop(mask, self.in_res, self.in_res) for mask in masks]
+        masks = [ResizeImage(mask, (self.in_res, self.in_res, self.in_depth)) for mask in masks]
         masks = [mask[None, ...] for mask in masks]
 
         # Augmentation
