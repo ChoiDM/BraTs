@@ -24,24 +24,24 @@ Out private dataset which has four types of MRI images (FLAIR, T1GD, T1, T2) and
 The dataset architecture must be as below.
 ```
 data
-└───train
-│   └───patientDir001
-│   │   │   FLAIR_stripped.nii.gz
-│   │   │   T1GD_stripped.nii.gz
-│   │   │   T1_stripped.nii.gz
-│   │   │   T2_stripped.nii.gz
-│   │   │   necro_mask.nii.gz
-│   │   │   ce_mask.nii.gz
-│   │   │   t2_mask.nii.gz
-│   │   │
-│   └───patientDir002
-│   └───patientDir003
-│   └───...
+└─── train
+│    └─── patientDir001
+│    │    │   FLAIR_stripped.nii.gz
+│    │    │   T1GD_stripped.nii.gz
+│    │    │   T1_stripped.nii.gz
+│    │    │   T2_stripped.nii.gz
+│    │    │   necro_mask.nii.gz
+│    │    │   ce_mask.nii.gz
+│    │    │   t2_mask.nii.gz
+│    │    │
+│    └─── patientDir002
+│    └─── patientDir003
+│    └─── ...
 │
-└───valid
-    └───patientDir00a
-    └───patientDir00b
-    └───...
+└─── valid
+     └─── patientDir00a
+     └─── patientDir00b
+     └─── ...
 ```
 
 #### Training and Testing
