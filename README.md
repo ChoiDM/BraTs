@@ -39,9 +39,9 @@ data
 │   └───...
 │
 └───valid
-│   └───patientDir00a
-│   └───patientDir00b
-│   └───...
+    └───patientDir00a
+    └───patientDir00b
+    └───...
 ```
 
 #### Training and Testing
