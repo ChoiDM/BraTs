@@ -86,10 +86,10 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
 
         # Single GPU
         if opt.ngpu == 1:
-            torch.save(net.cpu().state_dict(), model_filename)
+            torch.save(net.state_dict().cpu(), model_filename)
         # Multi GPU
         else:
-            torch.save(net.cpu().module.state_dict(), model_filename)
+            torch.save(net.module.state_dict().cpu(), model_filename)
 
     print('>>> Current best: Dice: %.8f in %3d epoch\n' % (best_dice, best_epoch))
     
