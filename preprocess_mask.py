@@ -48,4 +48,4 @@ for patDir in tqdm(patDirs):
         sitk.WriteImage(PERI_sitk, os.path.join(patDir, 'peri_mask.nii.gz'))
     
     except Exception as e:
-        print(patDIr, "Error", e)
+        print(patDir, "Error", e)
