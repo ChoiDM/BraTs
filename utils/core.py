@@ -34,10 +34,10 @@ def train(net, dataset_trn, optimizer, criterion, epoch, opt):
         losses.update(loss.item(), img.size(0))
 
         if (it==0) or (it+1) % 10 == 0:
-            print('Epoch[%3d/%3d]-Iteration[%3d/%3d] Loss %.4f'
+            print('Epoch[%3d/%3d] | Iteration[%3d/%3d] | Loss %.4f'
                 % (epoch+1, opt.max_epoch, it+1, len(dataset_trn), losses.avg))
 
-    print(">>> Epoch[%3d/%3d] Training Loss : %.8f" % (epoch+1, opt.max_epoch, losses.avg))
+    print(">>> Epoch[%3d/%3d] Training Loss : %.8f\n" % (epoch+1, opt.max_epoch, losses.avg))
 
 
 def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best_epoch):
@@ -67,7 +67,7 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
         dice.update(dice_score.item(), img.size(0))
 
         if (it==0) or (it+1) % 10 == 0:
-            print('Epoch[%3d/%3d]-Iteration[%3d/%3d] Loss %.4f Dice %.4f'
+            print('Epoch[%3d/%3d] | Iteration[%3d/%3d] | Loss %.4f | Dice %.4f'
                 % (epoch+1, opt.max_epoch, it+1, len(dataset_val), losses.avg, dice.avg))
 
     print(">>> Epoch[%3d/%3d] Evalaution Loss : %.8f Dice %.4f" % (epoch+1, opt.max_epoch, losses.avg, dice.avg))
@@ -79,7 +79,7 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
         best_epoch = epoch
 
         # Remove previous weights pth files
-        for path in glob.glob('%s/*.pth' % opt.exp):
+        for path in glob('%s/*.pth' % opt.exp):
             os.remove(path)
 
         model_filename = '%s/epoch_%04d_dice%.4f_loss%.8f.pth' % (opt.exp, epoch, best_dice, losses.avg)

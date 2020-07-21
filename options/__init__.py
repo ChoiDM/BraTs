@@ -40,7 +40,7 @@ def parse_option(print_option=True):
     # Optimizer
     p.add_argument('--optim', default='Adam', type=str, help='RMSprop | SGD | Adam')
     p.add_argument('--lr', default=1e-4, type=float)
-    p.add_argument('--lr_decay_epoch', default='80,160', type=str, help="cosine | decay epochs with comma (ex - '20,40,60')")
+    p.add_argument('--lr_decay_epoch', default='40,50', type=str, help="cosine | decay epochs with comma (ex - '20,40,60')")
     p.add_argument('--lr_warmup_epoch', default=-1, type=int)
     p.add_argument('--eta_min_ratio', default=1e-2, type=float)
     p.add_argument('--momentum', default=0, type=float, help='momentum')
@@ -50,7 +50,7 @@ def parse_option(print_option=True):
     # Hyper-parameter
     p.add_argument('--batch_size', default=64, type=int, help='use 1 batch size in 3D training.')
     p.add_argument('--start_epoch', default=0, type=int)
-    p.add_argument('--max_epoch', default=240, type=int)
+    p.add_argument('--max_epoch', default=60, type=int)
 
     # Loss function
     p.add_argument('--loss', default='dice', type=str)
