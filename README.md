@@ -50,12 +50,10 @@ data
 - To train a 3D network, call:
 ```python train.py --batch_size 1 --in_dim 3 --in_depth 128 --in_res 140```
 
-- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets\
+- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets.\
 To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_res 140```
 
-Once a model has been trained, you can evaluate it with:
-
-```python test.py --in_dim 2 --resume trained_weights.pth```
+- To evaluate a network after training, call: ```python test.py --in_dim 2 --resume trained_weights.pth```
 
 #### Pretrained Models
 Not released yet.
