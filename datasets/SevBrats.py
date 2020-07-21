@@ -29,14 +29,14 @@ class SevBraTsDataset3D(Dataset):
 
         # Input Image (FLAIR, T1GD, T1, T2 order)
         imgs = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in img_paths]
-        imgs = [center_crop(img, 180, 180) for img in imgs]
-        imgs = [ResizeImage(img, (180, 180, 144)) for img in imgs]
+        imgs = [center_crop(img, opt.in_res, opt.in_res) for img in imgs]
+        imgs = [ResizeImage(img, (opt.in_res, opt.in_res, opt.in_depth)) for img in imgs]
         imgs = [img[None, ...] for img in imgs]
 
         # Ground-truth Masks (NECRO, CE, Peri order)
         masks = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in mask_paths]
-        masks = [center_crop(mask, 180, 180) for mask in masks]
-        masks = [ResizeImage(mask, (180, 180, 144)) for mask in masks]
+        masks = [center_crop(mask, opt.in_res, opt.in_res) for mask in masks]
+        masks = [ResizeImage(mask, (opt.in_res, opt.in_res, opt.in_depth)) for mask in masks]
         masks = [mask[None, ...] for mask in masks]
 
         # Augmentation
