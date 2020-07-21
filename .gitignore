@@ -4,3 +4,4 @@ data/valid
 .DS_STORE
 __pycache__
 .ipynb_checkpoints
+exp
