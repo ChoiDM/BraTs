@@ -1,7 +1,7 @@
 # Brain Tumor Segmentation
 
 ## Getting Started
-This repository provides everything necessary to train and evaluate a brain tumor semgentation model.
+This repository provides everything necessary to train and evaluate a brain tumor segmentation model.
 
 Requirements:
 - Python 3 (code has been tested on Python 3.5.6)
@@ -23,16 +23,14 @@ Stucture:
 Out private dataset which has four types of MRI images (FLAIR, T1GD, T1, T2) and three types of mask (necro, ce, T2)
 
 #### Training and Testing
-Before training, call the below code to pre-process masks.
-```python preprocess_mask.py```
+- Before training, call ```python preprocess_mask.py``` to pre-process masks.
 
-To train a 3D network, call:
+- To train a 3D network, call:
 ```python train.py --batch_size 1 --in_dim 3 --in_depth 128 --in_res 140```
 
-To train a 2D network, call:
-```python parsing_2D.py```
+- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets 
 
-```python train.py --batch_size 1 --in_dim 2 --in_res 140```
+- To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_res 140```
 
 Once a model has been trained, you can evaluate it with:
 
