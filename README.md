@@ -28,9 +28,8 @@ Out private dataset which has four types of MRI images (FLAIR, T1GD, T1, T2) and
 - To train a 3D network, call:
 ```python train.py --batch_size 1 --in_dim 3 --in_depth 128 --in_res 140```
 
-- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets 
-
-- To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_res 140```
+- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets
+To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_res 140```
 
 Once a model has been trained, you can evaluate it with:
 
