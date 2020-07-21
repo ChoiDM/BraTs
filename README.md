@@ -20,7 +20,29 @@ Stucture:
 - ```preprocess_mask.py/```: code for pre-processing masks (refinement of ce mask and peri-tumoral mask generation)
 
 #### Dataset
-Out private dataset which has four types of MRI images (FLAIR, T1GD, T1, T2) and three types of mask (necro, ce, T2)
+Out private dataset which has four types of MRI images (FLAIR, T1GD, T1, T2) and three types of mask (necro, ce, T2).\
+The dataset architecture must be as below.
+```
+data
+└───train
+│   └───patientDir001
+│   │   │   FLAIR_stripped.nii.gz
+│   │   │   T1GD_stripped.nii.gz
+│   │   │   T1_stripped.nii.gz
+│   │   │   T2_stripped.nii.gz
+│   │   │   necro_mask.nii.gz
+│   │   │   ce_mask.nii.gz
+│   │   │   t2_mask.nii.gz
+│   │   │
+│   └───patientDir002
+│   └───patientDir003
+│   └───...
+│
+└───valid
+│   └───patientDir00a
+│   └───patientDir00b
+│   └───...
+```
 
 #### Training and Testing
 - Before training, call ```python preprocess_mask.py``` to pre-process masks.
