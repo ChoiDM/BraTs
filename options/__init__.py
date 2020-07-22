@@ -26,7 +26,8 @@ def parse_option(print_option=True):
     p.add_argument('--trans_factor', default=0.05, type=float)
 
     # Input image
-    p.add_argument('--in_res', default=180, type=int, help='input resolution (center-cropping and resized)')
+    p.add_argument('--crop_size', default=180, type=int, help='center-cropping size before resizing')
+    p.add_argument('--in_res', default=160, type=int, help='input resolution using resize process (after center-cropping)')
     p.add_argument('--in_depth', default=128, type=int, help='number of 3D slices (only valid for 3D training)')
     p.add_argument('--mean', default=[75.48, 87.79, 92.07, 108.53], type=list, help='mean value of each input channel')
     p.add_argument('--std', default=[62.50, 66.89, 72.76, 90.76], type=list, help='std value of each input channel')
