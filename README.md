@@ -8,9 +8,9 @@ Requirements:
 - Python 3 (code has been tested on Python 3.5.6)
 - PyTorch (code tested with 1.1.0)
 - CUDA and cuDNN (tested with Cuda 10.0)
-- Python pacakges : opencv-python (tested with 4.1), tqdm, SimpleITK, scipy (tested with 1.2.1)
+- Python pacakges : tqdm, opencv-python (tested with 4.1), SimpleITK (tested with 1.2.0), scipy (tested with 1.2.1)
 
-Stucture:
+Structure:
 - ```data/```: save directory of datasets
 - ```datasets/```: data loading code
 - ```network/```: network architecture definitions
