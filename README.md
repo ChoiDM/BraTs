@@ -63,5 +63,6 @@ Not released yet.
 
 
 ## To do list
-- [ ] Release test script code.
-- [ ] Data Augmentation
+- [ ] Release test code.
+- [ ] Release pre-trained models.
+- [ ] Data Augmentation.
