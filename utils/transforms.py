@@ -87,9 +87,10 @@ def fill_holes(image):
         
         image_filled[d] = im_out.copy()
         
+    image_filled = (image_filled / 255.).astype(np.uint8)
     return image_filled
 
-def binary_mask(mask_array):
+def mask_binarization(mask_array):
     threshold = np.max(mask_array) / 2
     mask_binarized = (mask_array > threshold).astype(np.uint8)
     

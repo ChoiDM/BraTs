@@ -5,7 +5,7 @@ import numpy as np
 from glob import glob
 import SimpleITK as sitk
 
-from utils.transforms import ResizeImage, center_crop
+from utils.transforms import ResizeImage, center_crop, mask_binarization
 
 class SevBraTsDataset3D(Dataset):
     def __init__(self, data_root, opt, is_Train=True, augmentation=False):
@@ -29,7 +29,7 @@ class SevBraTsDataset3D(Dataset):
         # Load Image and Mask List
         img_paths = [os.path.join(patDir, '%s_stripped.nii.gz'%img_type) for img_type in ['FLAIR', 'T1GD', 'T1', 'T2']]
         mask_paths = [os.path.join(patDir, '%s_mask.nii.gz'%mask_type) for mask_type in ['necro', 'ce_refined', 'peri']]
-
+        
         # Input Image (FLAIR, T1GD, T1, T2 order)
         imgs = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in img_paths]
         imgs = [center_crop(img, self.in_res, self.in_res) for img in imgs]
@@ -40,6 +40,7 @@ class SevBraTsDataset3D(Dataset):
         masks = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in mask_paths]
         masks = [center_crop(mask, self.in_res, self.in_res) for mask in masks]
         masks = [ResizeImage(mask, (self.in_res, self.in_res, self.in_depth)) for mask in masks]
+        masks = [mask_binarization(mask) for mask in masks]
         masks = [mask[None, ...] for mask in masks]
 
         # Augmentation

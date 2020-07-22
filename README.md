@@ -21,7 +21,7 @@ Stucture:
 
 #### Dataset
 Out private dataset which has four types of MRI images (FLAIR, T1GD, T1, T2) and three types of mask (necro, ce, T2).\
-The dataset architecture must be as below.
+Place the dataset in ```data/``` directory and the dataset architecture must be as below.
 ```
 data
 └─── train
@@ -45,12 +45,13 @@ data
 ```
 
 #### Training and Testing
-- Before training, call ```python preprocess_mask.py``` to pre-process masks.
+- Before training, call ```python preprocess_mask.py``` to pre-process masks.\
+This python script generates ```ce_refined_mask.nii.gz``` and ```peri_mask.nii.gz``` in each patient directory.
 
 - To train a 3D network, call:
 ```python train.py --batch_size 1 --in_dim 3 --in_depth 128 --in_res 140```
 
-- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets.\
+- Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets, which generates ```2D_slice/``` directory in each patient directory.\
 To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_res 140```
 
 - To evaluate a network after training, call: ```python test.py --in_dim 2 --resume trained_weights.pth```

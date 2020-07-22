@@ -4,7 +4,7 @@ from glob import glob
 from tqdm import tqdm
 import SimpleITK as sitk
 
-from utils.transforms import binary_mask, fill_holes
+from utils.transforms import mask_binarization, fill_holes
 
 # Description
 # --- This python script generates Refined CE mask and PERI-tumoral mask
@@ -26,7 +26,7 @@ for patDir in tqdm(patDirs):
         mask_list = [os.path.join(patDir, '%s_mask.nii.gz'%mask_type) for mask_type in ['t2', 'ce', 'necro']]
         T2_sitk, CE_sitk, NECRO_sitk = [sitk.ReadImage(path) for path in mask_list]
         T2_arr, CE_arr, NECRO_arr = [sitk.GetArrayFromImage(img) for img in [T2_sitk, CE_sitk, NECRO_sitk]]
-        T2_arr, CE_arr, NECRO_arr = [binary_mask(mask) for mask in [T2_arr, CE_arr, NECRO_arr]]
+        T2_arr, CE_arr, NECRO_arr = [mask_binarization(mask) for mask in [T2_arr, CE_arr, NECRO_arr]]
         
         # Create Refined CE Mask
         SUM_arr = ((CE_arr != 0) | (NECRO_arr != 0)).astype(np.uint8)
