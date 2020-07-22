@@ -1,7 +1,7 @@
 # Brain Tumor Segmentation
 
 ## Getting Started
-This repository provides everything necessary to train and evaluate a brain tumor segmentation model.
+This repository provides everything necessary to train and evaluate a brain tumor segmentation model.\
 The baseline network is [Modified-UNet](https://github.com/pykao/Modified-3D-UNet-Pytorch).
 
 Requirements:
@@ -63,5 +63,5 @@ Not released yet.
 
 
 ## To do list
-- [] Release test script code.
-- [] Data Augmentation
+- [ ] Release test script code.
+- [ ] Data Augmentation
