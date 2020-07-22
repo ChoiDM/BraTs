@@ -68,7 +68,7 @@ class SevBraTsDataset2D(Dataset):
     def __init__(self, data_root, opt, is_Train=True, augmentation=False):
         super(SevBraTsDataset2D, self).__init__()
 
-        self.data_list = glob(os.path.join(data_root, 'train' if is_Train else 'valid', '*', '*.npy'))
+        self.data_list = glob(os.path.join(data_root, 'train' if is_Train else 'valid', '*', '2D_slice', '*.npy'))
         self.len = len(self.data_list)
         self.augmentation = augmentation
 
@@ -87,7 +87,7 @@ class SevBraTsDataset2D(Dataset):
         imgs = [img[None, ...] for img in imgs]
 
         # Ground-truth Masks (NECRO, CE, Peri order)
-        masks = [slice_dict['%s_mask'] for mask_type in ['ce', 'necro', 'peri']]
+        masks = [slice_dict['%s_mask'%mask_type] for mask_type in ['ce', 'necro', 'peri']]
         masks = [center_crop(mask, self.in_res, self.in_res) for mask in masks]
         masks = [mask_binarization(mask) for mask in masks]
         masks = [mask[None, ...] for mask in masks]

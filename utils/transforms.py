@@ -50,6 +50,17 @@ def center_crop(img_array, x_size, y_size):
                         x_start : x_start + x_size]
 
         return img_crop
+        
+    elif np.ndim(img_array) == 2:
+        y, x = img_array.shape
+
+        x_start = (x//2) - (x_size//2)
+        y_start = (y//2) - (y_size//2)
+        
+        img_crop = img_array[y_start : y_start + y_size,
+                        x_start : x_start + x_size]
+
+        return img_crop
 
 def random_rotation(img, mask, min_angle = -15, max_angle = 15, axes=(1,2)):
     angle = randrange(min_angle, max_angle)
