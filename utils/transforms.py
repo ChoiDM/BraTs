@@ -30,7 +30,10 @@ def ResizeImage(img, new_shape):
 
 def center_crop(img_array, x_size, y_size):
     if np.ndim(img_array) == 4:
-        _, z, y, x = img_array.shape
+        _, _, y, x = img_array.shape
+
+        if (y < y_size) or (x < x_size):
+            return img_array
 
         x_start = (x//2) - (x_size//2)
         y_start = (y//2) - (y_size//2)
@@ -42,6 +45,9 @@ def center_crop(img_array, x_size, y_size):
     elif np.ndim(img_array) == 3:
         z, y, x = img_array.shape
 
+        if (y < y_size) or (x < x_size):
+            return img_array
+            
         x_start = (x//2) - (x_size//2)
         y_start = (y//2) - (y_size//2)
         
@@ -54,6 +60,9 @@ def center_crop(img_array, x_size, y_size):
     elif np.ndim(img_array) == 2:
         y, x = img_array.shape
 
+        if (y < y_size) or (x < x_size):
+            return img_array
+            
         x_start = (x//2) - (x_size//2)
         y_start = (y//2) - (y_size//2)
         
