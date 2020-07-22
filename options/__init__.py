@@ -39,9 +39,9 @@ def parse_option(print_option=True):
 
     # Optimizer
     p.add_argument('--optim', default='Adam', type=str, help='RMSprop | SGD | Adam')
-    p.add_argument('--lr', default=1e-4, type=float)
+    p.add_argument('--lr', default=1e-5, type=float)
     p.add_argument('--lr_decay_epoch', default='40,50', type=str, help="cosine | decay epochs with comma (ex - '20,40,60')")
-    p.add_argument('--lr_warmup_epoch', default=-1, type=int)
+    p.add_argument('--lr_warmup_epoch', default=5, type=int)
     p.add_argument('--eta_min_ratio', default=1e-2, type=float)
     p.add_argument('--momentum', default=0, type=float, help='momentum')
     p.add_argument('--wd', default=1e-5, type=float, help='weight decay')
@@ -89,7 +89,7 @@ def parse_option(print_option=True):
     
         print('   Data root : %s' % (opt.data_root))
         print()
-        print('   lr: %s (decay at %s)' % (opt.lr, opt.lr_decay_epoch))
+        print('   lr: %s (linear warm-up until %s / decay at %s)' % (opt.lr, opt.lr_warmup_epoch, opt.lr_decay_epoch))
         print('   gpu_id: %s' % opt.gpu_id)
         print('   resume: %s' % opt.resume)
         print('   batch size: %d' % opt.batch_size)

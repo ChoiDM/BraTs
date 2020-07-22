@@ -65,44 +65,48 @@ class SevBraTsDataset3D(Dataset):
 
 
 class SevBraTsDataset2D(Dataset):
-    def __init__(self, data_root, is_Train=True, augmentation=False):
+    def __init__(self, data_root, opt, is_Train=True, augmentation=False):
         super(SevBraTsDataset2D, self).__init__()
+
         self.data_list = glob(os.path.join(data_root, 'train' if is_Train else 'valid', '*', '*.npy'))
         self.len = len(self.data_list)
         self.augmentation = augmentation
-        self.is_Train = is_Train
+
+        self.in_res = opt.in_res
+
+        self.mean = np.array(opt.mean, dtype=np.float32)[:,None,None]
+        self.std = np.array(opt.std, dtype=np.float32)[:,None,None]
 
     def __getitem__(self, index):
+        # Load Slice Directory
         slice_dict = np.load(self.data_list[index], allow_pickle=True).item()
 
-        # Input Image
-        flair = slice_dict['FLAIR']
-        t1ce = slice_dict['T1CE']
-        t1 = slice_dict['T1']
-        t2 = slice_dict['T2']
+        # Input Image (FLAIR, T1GD, T1, T2 order)
+        imgs = [slice_dict[img_type] for img_type in ['FLAIR', 'T1GD', 'T1', 'T2']]
+        imgs = [center_crop(img, self.in_res, self.in_res) for img in imgs]
+        imgs = [img[None, ...] for img in imgs]
 
-        # Mask
-        ce_mask = slice_dict['ce_mask']
-        necro_mask = slice_dict['necro_mask']
-        peri_mask = slice_dict['peri_mask']
+        # Ground-truth Masks (NECRO, CE, Peri order)
+        masks = [slice_dict['%s_mask'] for mask_type in ['ce', 'necro', 'peri']]
+        masks = [center_crop(mask, self.in_res, self.in_res) for mask in masks]
+        masks = [mask_binarization(mask) for mask in masks]
+        masks = [mask[None, ...] for mask in masks]
 
         # Augmentation
         if self.augmentation:
             pass
 
-        # Add axis
-        flair, t1ce, t1, t2, ce_mask, necro_mask, peri_mask = [arr[None, ...] for arr in [flair, t1ce, t1, t2, ce_mask, necro_mask, peri_mask]]
-        
-        bg_mask = np.ones_like(ce_mask)
-        bg_mask[(ce_mask==1) | (necro_mask==1) | (peri_mask==1)] = 0
+        # Stack images and Z-score Normalization
+        imgs = (np.concatenate(imgs, axis=0) - self.mean) / self.std
+        imgs = imgs.astype(np.float32)
 
-        # Ground-truth Mask
-        mask_gt = np.concatenate([bg_mask, necro_mask, peri_mask, ce_mask], axis=0)
-        
-        img = (np.concatenate([flair, t1, t1ce, t2], axis = 0))
-        mask_gt = mask_gt.astype(np.float32)
+        # Stack masks
+        background_mask = np.ones_like(masks[0])
+        background_mask[(masks[0]==1) | (masks[1]==1) | (masks[2]==1)] = 0
+        masks = np.concatenate([background_mask]+masks, axis=0)
+        masks = masks.astype(np.float32)
 
-        return img, mask_gt
+        return imgs, masks
         
     def __len__(self):
         return self.len

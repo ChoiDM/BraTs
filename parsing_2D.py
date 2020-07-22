@@ -35,9 +35,9 @@ for patDir in tqdm(patDirs):
                         'T1GD' : T1GD[d],
                         'T1' : T1[d],
                         'T2' : T2[d],
-                        'peri_mask' : PERI[d],
+                        'necro_mask' : NECRO[d],
                         'ce_mask' : CE[d],
-                        'necro_mask' : NECRO[d]}
+                        'peri_mask' : PERI[d]}
             
             save_path = os.path.join(patDir, '2d_slice', '%s_%03d.npy' % (patID, d))
             if not os.path.exists(os.path.dirname(save_path)):

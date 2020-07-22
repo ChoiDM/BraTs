@@ -2,6 +2,7 @@
 
 ## Getting Started
 This repository provides everything necessary to train and evaluate a brain tumor segmentation model.
+The baseline network is [Modified-UNet](https://github.com/pykao/Modified-3D-UNet-Pytorch).
 
 Requirements:
 - Python 3 (code has been tested on Python 3.5.6)
@@ -58,3 +59,9 @@ To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_r
 
 #### Pretrained Models
 Not released yet.
+
+
+
+## To do list
+- [] Release test script code.
+- [] Data Augmentation
