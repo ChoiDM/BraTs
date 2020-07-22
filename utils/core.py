@@ -60,7 +60,7 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
         loss = criterion(pred, mask)
 
         # Evaluation Metric Calcuation
-        necro_dice, ce_dice, peri_dice = DiceCoef(sigmoid_normalization=False, return_score_per_channel=True)(pred[:,1:], mask[:,1:])
+        necro_dice, ce_dice, peri_dice = DiceCoef(sigmoid_normalization=True, return_score_per_channel=True)(pred[:,1:], mask[:,1:])
         total_dice = (necro_dice + ce_dice + peri_dice) / 3
 
         # Stack Results
