@@ -60,9 +60,9 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
 
     for it, (img, masks_cropped, masks_org, meta) in enumerate(dataset_val):
         # Load Data
-        img, masks_cropped = torch.Tensor(img).float(), torch.Tensor(masks_cropped).float()
+        img, masks_cropped, masks_org = [torch.Tensor(tensor).float() for tensor in [img, masks_cropped, masks_org]]
         if opt.use_gpu:
-            img, masks_cropped = img.cuda(non_blocking=True), masks_cropped.cuda(non_blocking=True)
+            img, masks_cropped, masks_org = [tensor.cuda(non_blocking=True) for tensor in [img, masks_cropped, masks_org]]
 
         # Predict
         with torch.no_grad():
@@ -81,13 +81,6 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
             ce_dices.update(ce_dice.item(), 1)
             peri_dices.update(peri_dice.item(), 1)
             total_dices.update(total_dice.item(), 1)
-
-        # necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[:,1:], masks_cropped[:,1:])
-        # total_dice = (necro_dice + ce_dice + peri_dice) / 3
-        # necro_dices.update(necro_dice.item(), img.size(0))
-        # ce_dices.update(ce_dice.item(), img.size(0))
-        # peri_dices.update(peri_dice.item(), img.size(0))
-        # total_dices.update(total_dice.item(), img.size(0))
 
         # Stack Results
         losses.update(loss.item(), img.size(0))
