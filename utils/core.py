@@ -74,7 +74,7 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
         # Evaluation Metric Calcuation
         pred_decoded = decode_preds(pred, meta, refine=True)
         for pred, gt in zip(pred_decoded, masks_org):
-            necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[None, ...], gt[None, ...])
+            necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[None, ...], gt[None, ...].to(pred.device))
             total_dice = (necro_dice + ce_dice + peri_dice) / 3
 
             necro_dices.update(necro_dice.item(), 1)
@@ -136,7 +136,7 @@ def evaluate(dataset_val, net, opt):
         # Evaluation Metric Calcuation
         pred_decoded = decode_preds(pred, meta, refine=True)
         for pred, gt in zip(pred_decoded, masks_org):
-            necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[None, ...], gt[None, ...])
+            necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[None, ...], gt[None, ...].to(pred.device))
             total_dice = (necro_dice + ce_dice + peri_dice) / 3
 
             necro_dices.update(necro_dice.item(), 1)

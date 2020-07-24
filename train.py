@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     for epoch in range(opt.start_epoch, opt.max_epoch):
         # Train
-        train(net, dataset_trn, optimizer, criterion, epoch, opt)
+        # train(net, dataset_trn, o/ptimizer, criterion, epoch, opt)
 
         # Evaluate
         best_dice, best_epoch = validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best_epoch)
