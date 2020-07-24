@@ -124,9 +124,9 @@ def evaluate(dataset_val, net, opt):
 
     for img, masks_cropped, masks_org, meta in tqdm(dataset_val):
         # Load Data
-        img, masks_cropped = torch.Tensor(img).float(), torch.Tensor(masks_cropped).float()
+        img, masks_cropped, masks_org = [torch.Tensor(tensor).float() for tensor in [img, masks_cropped, masks_org]]
         if opt.use_gpu:
-            img, masks_cropped = img.cuda(non_blocking=True), masks_cropped.cuda(non_blocking=True)
+            img, masks_cropped, masks_org = [tensor.cuda(non_blocking=True) for tensor in [img, masks_cropped, masks_org]]
 
         # Predict
         with torch.no_grad():
