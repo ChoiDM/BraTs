@@ -45,6 +45,18 @@ data
      └─── ...
 ```
 
+If the mask doesn't have to be pre-processed (peri-tumoral mask is provided), the patient directory can consist of as below.
+```
+patientDir
+│   FLAIR_stripped.nii.gz
+│   T1GD_stripped.nii.gz
+│   T1_stripped.nii.gz
+│   T2_stripped.nii.gz
+│   necro_mask.nii.gz
+│   ce_mask.nii.gz
+│   peri_mask.nii.gz
+```
+
 #### Training and Testing
 - Before training, call ```python preprocess_mask.py``` to pre-process masks.\
 This python script generates ```ce_refined_mask.nii.gz``` and ```peri_mask.nii.gz``` in each patient directory.
