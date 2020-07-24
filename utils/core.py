@@ -60,9 +60,9 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
 
     for it, (img, masks_cropped, masks_org, meta) in enumerate(dataset_val):
         # Load Data
-        img, masks_cropped, masks_org = [torch.Tensor(tensor).float() for tensor in [img, masks_cropped, masks_org]]
+        img, masks_cropped = [torch.Tensor(tensor).float() for tensor in [img, masks_cropped]]
         if opt.use_gpu:
-            img, masks_cropped, masks_org = [tensor.cuda(non_blocking=True) for tensor in [img, masks_cropped, masks_org]]
+            img, masks_cropped = [tensor.cuda(non_blocking=True) for tensor in [img, masks_cropped]]
 
         # Predict
         with torch.no_grad():
@@ -124,9 +124,9 @@ def evaluate(dataset_val, net, opt):
 
     for img, masks_cropped, masks_org, meta in tqdm(dataset_val):
         # Load Data
-        img, masks_cropped, masks_org = [torch.Tensor(tensor).float() for tensor in [img, masks_cropped, masks_org]]
+        img, masks_cropped = [torch.Tensor(tensor).float() for tensor in [img, masks_cropped]]
         if opt.use_gpu:
-            img, masks_cropped, masks_org = [tensor.cuda(non_blocking=True) for tensor in [img, masks_cropped, masks_org]]
+            img, masks_cropped = [tensor.cuda(non_blocking=True) for tensor in [img, masks_cropped]]
 
         # Predict
         with torch.no_grad():
