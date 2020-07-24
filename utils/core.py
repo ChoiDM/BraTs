@@ -33,7 +33,8 @@ def train(net, dataset_trn, optimizer, criterion, epoch, opt):
         optimizer.step()
 
         # Calculation Dice Coef Score
-        necro_dice, ce_dice, peri_dice = DiceCoef(sigmoid_normalization=True, return_score_per_channel=True)(pred[:,1:], mask[:,1:])
+        pred_decoded = torch.stack(decode_preds(pred), 0)
+        necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred_decoded, mask[:,1:])
         total_dice = (necro_dice + ce_dice + peri_dice) / 3
         necro_dices.update(necro_dice.item(), img.size(0))
         ce_dices.update(ce_dice.item(), img.size(0))
@@ -73,15 +74,15 @@ def validate(dataset_val, net, criterion, optimizer, epoch, opt, best_dice, best
         # Evaluation Metric Calcuation
         pred_decoded = decode_preds(pred, meta, refine=True)
         for pred, gt in zip(pred_decoded, masks_org):
-            necro_dice, ce_dice, peri_dice = DiceCoef(sigmoid_normalization=True, return_score_per_channel=True)(pred[None, ...], gt[None, ...])
+            necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[None, ...], gt[None, ...])
             total_dice = (necro_dice + ce_dice + peri_dice) / 3
 
             necro_dices.update(necro_dice.item(), 1)
             ce_dices.update(ce_dice.item(), 1)
             peri_dices.update(peri_dice.item(), 1)
             total_dices.update(total_dice.item(), 1)
-            
-        # necro_dice, ce_dice, peri_dice = DiceCoef(sigmoid_normalization=True, return_score_per_channel=True)(pred[:,1:], masks_cropped[:,1:])
+
+        # necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[:,1:], masks_cropped[:,1:])
         # total_dice = (necro_dice + ce_dice + peri_dice) / 3
         # necro_dices.update(necro_dice.item(), img.size(0))
         # ce_dices.update(ce_dice.item(), img.size(0))
@@ -142,7 +143,7 @@ def evaluate(dataset_val, net, opt):
         # Evaluation Metric Calcuation
         pred_decoded = decode_preds(pred, meta, refine=True)
         for pred, gt in zip(pred_decoded, masks_org):
-            necro_dice, ce_dice, peri_dice = DiceCoef(sigmoid_normalization=True, return_score_per_channel=True)(pred[None, ...], gt[None, ...])
+            necro_dice, ce_dice, peri_dice = DiceCoef(return_score_per_channel=True)(pred[None, ...], gt[None, ...])
             total_dice = (necro_dice + ce_dice + peri_dice) / 3
 
             necro_dices.update(necro_dice.item(), 1)

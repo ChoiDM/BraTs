@@ -54,23 +54,6 @@ def compute_per_channel_dice(input, target, epsilon=1e-5, ignore_index=None, wei
     # input and target shapes must match
     assert input.size() == target.size(), "'input' and 'target' must have the same shape"
 
-
-    # Convert to Binary
-    zeros = torch.zeros(input.size())
-    ones = torch.ones(input.size())
-
-    target = target.cpu()
-    target = torch.where(target > 0.9, ones, zeros)
-
-    if torch.cuda.is_available():
-        target = target.cuda()
-
-    input = input.cpu()
-    input = torch.where(input > 0.9, ones, zeros)
-    
-    if torch.cuda.is_available():
-        input = input.cuda()
-
     input = flatten(input)
     target = flatten(target)
 
@@ -85,26 +68,14 @@ def compute_per_channel_dice(input, target, epsilon=1e-5, ignore_index=None, wei
 
 class DiceCoef(nn.Module):
     """Computes Dice Loss, which just 1 - DiceCoefficient described above.
-    Additionally allows per-class weights to be provided.
     """
 
-    def __init__(self, epsilon=1e-5, sigmoid_normalization=True, return_score_per_channel=False):
+    def __init__(self, epsilon=1e-5, return_score_per_channel=False):
         super(DiceCoef, self).__init__()
         self.epsilon = epsilon
         self.return_score_per_channel = return_score_per_channel
-        # The output from the network during training is assumed to be un-normalized probabilities and we would
-        # like to normalize the logits. Since Dice (or soft Dice in this case) is usually used for binary data,
-        # normalizing the channels with Sigmoid is the default choice even for multi-class segmentation problems.
-        # However if one would like to apply Softmax in order to get the proper probability distribution from the
-        # output, just specify sigmoid_normalization=False.
-        if sigmoid_normalization:
-            self.normalization = nn.Sigmoid()
-        else:
-            self.normalization = nn.Softmax(dim=1)
-        # if True skip the last channel in the target
 
     def forward(self, input, target):
-        input = self.normalization(input)
         per_channel_dice = compute_per_channel_dice(input, target, epsilon=self.epsilon)
         # Average the Dice score across all channels/classes
         if self.return_score_per_channel:

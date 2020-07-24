@@ -211,11 +211,13 @@ def refine_mask(necro_mask, ce_mask, peri_mask):
     
     return necro_mask, refined_ce_mask, refined_peri_array
 
-def decode_preds(pred, meta, refine=True):
+def decode_preds(pred, meta=None, refine=True):
     batch_size = pred.size(0)
-    org_sizes = meta['org_size'].cpu().data.numpy()
+
+    if meta is not None:
+        org_sizes = meta['org_size'].cpu().data.numpy()
+
     pred_decoded = []
-    
     for b in range(batch_size):
         # Probability Mask to Binary Mask
         pred_bi = (pred[b].sigmoid() > 0.5).cpu().data.numpy()
@@ -231,12 +233,15 @@ def decode_preds(pred, meta, refine=True):
             pred_peri[(pred_necro == 1) | (pred_ce == 1)] = 0
         
         # Resize to Original Size
-        preds = [ResizeImage(pred, org_sizes[b]) for pred in [pred_necro, pred_ce, pred_peri]]
+        preds = [pred_necro, pred_ce, pred_peri]
+        if meta is not None:
+            preds = [ResizeImage(pred, org_sizes[b]) for pred in preds]
+
         preds = [mask_binarization(pred) for pred in preds]
         preds = [pred[None, ...] for pred in preds]
 
         # Stack processed masks
         pred_bi = np.concatenate(preds, axis=0)
-        pred_decoded.append(torch.Tensor(pred_bi))
+        pred_decoded.append(torch.Tensor(pred_bi).to(pred.device))
     
     return pred_decoded
