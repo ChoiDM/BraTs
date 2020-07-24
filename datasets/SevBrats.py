@@ -6,7 +6,7 @@ import numpy as np
 from glob import glob
 import SimpleITK as sitk
 
-from utils.transforms import ResizeImage, center_crop, mask_binarization
+from utils.transforms import ResizeImage, center_crop, mask_binarization, augment_imgs_and_masks
 
 class SevBraTsDataset3D(Dataset):
     def __init__(self, data_root, opt, is_Train=True, augmentation=False):
@@ -87,7 +87,12 @@ class SevBraTsDataset2D(Dataset):
 
         self.data_list = glob(os.path.join(data_root, 'train' if is_Train else 'valid', '*', '2D_slice', '*.npy'))
         self.len = len(self.data_list)
+
         self.augmentation = augmentation
+        self.rot_factor = opt.rot_factor
+        self.scale_factor = opt.scale_factor
+        self.flip = opt.flip
+        self.trans_factor = opt.trans_factor
 
         self.in_res = opt.in_res
 
@@ -115,12 +120,8 @@ class SevBraTsDataset2D(Dataset):
         masks = [mask[None, ...] for mask in masks]
         masks_cropped = [ResizeImage(mask, (self.in_res, self.in_res)) for mask in masks]
         
-        # Augmentation
-        if self.augmentation:
-            pass
-
-        # Stack images and Z-score Normalization
-        imgs = (np.concatenate(imgs, axis=0) - self.mean) / self.std
+        # Stack images
+        imgs = np.concatenate(imgs, axis=0)
         imgs = imgs.astype(np.float32)
 
         # Stack cropped masks
@@ -129,7 +130,14 @@ class SevBraTsDataset2D(Dataset):
         masks_cropped = np.concatenate([background_mask]+masks_cropped, axis=0)
         masks_cropped = masks_cropped.astype(np.float32)
         
-        if self.is_Train :
+        # Augmentation
+        if self.augmentation:
+            imgs, masks_cropped = augment_imgs_and_masks(imgs, masks_cropped, self.rot_factor, self.scale_factor, self.trans_factor, self.flip)
+
+        # Z-Score Normalization
+        imgs = (imgs - self.mean) / self.std
+        
+        if self.is_Train:
             return imgs, masks_cropped
         
         else:

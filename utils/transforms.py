@@ -2,10 +2,9 @@ import cv2
 import torch
 import numpy as np
 import SimpleITK as sitk
-from scipy import ndimage
 from scipy.misc import imresize
-from random import randrange
-
+from random import uniform
+from imgaug import augmenters as iaa
 
 def ResizeSitkImage(sitk_file, new_shape):
     new_shape = (int(new_shape[0]), int(new_shape[1]), int(new_shape[2]))
@@ -41,49 +40,88 @@ def ResizeImage(img, new_shape):
             return imresize(img, new_shape, mode='L')
 
 def center_crop(img_array, x_size, y_size):
-    if np.ndim(img_array) == 3:
-        z, y, x = img_array.shape
+    y, x = img_array.shape[-2:]
 
-        if (y < y_size) or (x < x_size):
-            return img_array
-            
-        x_start = (x//2) - (x_size//2)
-        y_start = (y//2) - (y_size//2)
+    if (y < y_size) or (x < x_size):
+        return img_array
         
-        img_crop = img_array[:,
-                        y_start : y_start + y_size,
-                        x_start : x_start + x_size]
-
-        return img_crop
+    x_start = (x//2) - (x_size//2)
+    y_start = (y//2) - (y_size//2)
     
-    elif np.ndim(img_array) == 4:
-        _, _, y, x = img_array.shape
+    img_crop = img_array[...,
+                    y_start : y_start + y_size,
+                    x_start : x_start + x_size]
 
-        if (y < y_size) or (x < x_size):
-            return img_array
-            
-        x_start = (x//2) - (x_size//2)
-        y_start = (y//2) - (y_size//2)
-        
-        img_crop = img_array[:, :,
-                        y_start : y_start + y_size,
-                        x_start : x_start + x_size]
+    return img_crop
 
-        return img_crop
+def augment_imgs_and_masks(imgs, masks, rot_factor, scale_factor, trans_factor, flip):
+    rot_factor = uniform(-rot_factor, rot_factor)
+    scale_factor = uniform(1-scale_factor, 1+scale_factor)
+    trans_factor = [int(imgs.shape[1]*uniform(-trans_factor, trans_factor)),
+                    int(imgs.shape[2]*uniform(-trans_factor, trans_factor))]
 
-    elif np.ndim(img_array) == 2:
-        y, x = img_array.shape
+    # 2D input
+    if np.ndim(imgs) == 3:
+        seq = iaa.Sequential([
+                iaa.Affine(
+                    translate_px={"x": trans_factor[0], "y": trans_factor[1]},
+                    scale=(scale_factor, scale_factor),
+                    rotate=rot_factor
+                )
+            ])
 
-        if (y < y_size) or (x < x_size):
-            return img_array
-            
-        x_start = (x//2) - (x_size//2)
-        y_start = (y//2) - (y_size//2)
-        
-        img_crop = img_array[y_start : y_start + y_size,
-                        x_start : x_start + x_size]
+        seq_det = seq.to_deterministic()
 
-        return img_crop
+        imgs = seq_det.augment_images(imgs)
+        masks = seq_det.augment_images(masks)
+
+        if flip and uniform(0, 1) > 0.5:
+            imgs = np.flip(imgs, 2).copy()
+            masks = np.flip(masks, 2).copy()
+
+    # 3D input
+    elif np.ndim(imgs) == 4:
+        pass
+
+    return imgs, masks
+
+def random_scale(imgs, masks, max_range):
+    scale_factor = uniform(1-max_range, 1+max_range)
+    print(scale_factor)
+    # 2D input
+    if np.ndim(imgs) == 3:
+        # Move channel axis to last order
+        imgs = np.moveaxis(imgs, 0, -1)
+        masks = np.moveaxis(masks, 0, -1)
+
+        # Scale images
+        imgs_scaled = rescale(imgs, scale_factor, preserve_range=True, mode='edge').astype(imgs.dtype)
+        masks_scaled = rescale(masks, scale_factor, preserve_range=True, mode='edge').astype(masks.dtype)
+
+        if scale_factor < 1.0:
+            imgs = np.ones_like(imgs, dtype=imgs.dtype) * imgs[0,0]
+            masks = np.zeros_like(masks, dtype=masks.dtype)
+
+            imgs[imgs.shape[0]//2-imgs_scaled.shape[0]//2:imgs.shape[0]//2+imgs_scaled.shape[0]//2,
+                 imgs.shape[1]//2-imgs_scaled.shape[1]//2:imgs.shape[1]//2+imgs_scaled.shape[1]//2] = imgs_scaled.copy()
+            masks[masks.shape[0]//2-masks_scaled.shape[0]//2:masks.shape[0]//2+masks_scaled.shape[0]//2,
+                 masks.shape[1]//2-masks_scaled.shape[1]//2:masks.shape[1]//2+masks_scaled.shape[1]//2] = masks_scaled.copy()
+
+        else:
+            imgs = imgs_scaled[imgs_scaled.shape[0]//2-imgs.shape[0]//2:imgs_scaled.shape[0]//2+imgs.shape[0]//2,
+                               imgs_scaled.shape[1]//2-imgs.shape[1]//2:imgs_scaled.shape[1]//2+imgs.shape[1]//2].copy()
+            masks = masks_scaled[masks_scaled.shape[0]//2-masks.shape[0]//2:masks_scaled.shape[0]//2+masks.shape[0]//2,
+                               masks_scaled.shape[1]//2-masks.shape[1]//2:masks_scaled.shape[1]//2+masks.shape[1]//2].copy()
+
+        # Recover channel axis to first order
+        imgs = np.moveaxis(imgs, -1, 0)
+        masks = np.moveaxis(masks, -1, 0)
+
+    # 3D input
+    elif np.ndim(imgs) == 4:
+        pass
+
+    return imgs, masks
 
 def pad_cropped_boundaries(img_array, x_org, y_org):
     if np.ndim(img_array) == 3:
@@ -112,12 +150,6 @@ def pad_cropped_boundaries(img_array, x_org, y_org):
 
     return re_center_cropped
 
-def random_rotation(img, mask, min_angle = -15, max_angle = 15, axes=(1,2)):
-    angle = randrange(min_angle, max_angle)
-
-    img_rot = ndimage.rotate(img, angle, axes=axes, reshape=False, mode='reflect').copy()
-    mask_rot = ndimage.rotate(mask, angle, axes=axes, reshape=False, mode='reflect').copy()
-    return img_rot, mask_rot
 
 def fill_holes(image):
     # Reference : https://stackoverflow.com/questions/50450654/filling-in-circles-in-opencv

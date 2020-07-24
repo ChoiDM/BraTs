@@ -8,7 +8,7 @@ Requirements:
 - Python 3 (code has been tested on Python 3.5.6)
 - PyTorch (code tested with 1.1.0)
 - CUDA and cuDNN (tested with Cuda 10.0)
-- Python pacakges : tqdm, opencv-python (tested with 4.1), SimpleITK (tested with 1.2.0), scipy (tested with 1.2.1)
+- Python pacakges : tqdm, opencv-python (4.1), SimpleITK (1.2.0), scipy (1.2.1), imgaug (0.4.0)
 
 Structure:
 - ```data/```: save directory of datasets
@@ -64,5 +64,5 @@ Not released yet.
 
 ## To do list
 - [x] Release test code.
+- [x] Data Augmentation.
 - [ ] Release pre-trained models.
-- [ ] Data Augmentation.

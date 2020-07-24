@@ -20,10 +20,10 @@ def parse_option(print_option=True):
     
     # Data augmentation
     p.add_argument('--augmentation', default=True, type=str2bool, help='apply augmentation or not')
-    p.add_argument('--rot_factor', default=50, type=float)
+    p.add_argument('--rot_factor', default=30, type=float)
     p.add_argument('--scale_factor', default=0.15, type=float)
     p.add_argument('--flip', default='True', type=str2bool)
-    p.add_argument('--trans_factor', default=0.05, type=float)
+    p.add_argument('--trans_factor', default=0.1, type=float)
 
     # Input image
     p.add_argument('--in_res', default=200, type=int, help='input resolution using resize process (after center-cropping)')
