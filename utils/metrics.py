@@ -9,7 +9,7 @@ def dice_coef(y_pred, y_true):
     ones = torch.ones(y_pred.size())
 
     y_pred = y_pred.cpu()
-    y_pred = torch.where(y_pred > 0.5, ones, zeros)
+    y_pred = torch.where(y_pred > 0.9, ones, zeros)
 
     if torch.cuda.is_available():
         y_pred = y_pred.cuda()
@@ -60,13 +60,13 @@ def compute_per_channel_dice(input, target, epsilon=1e-5, ignore_index=None, wei
     ones = torch.ones(input.size())
 
     target = target.cpu()
-    target = torch.where(target > 0.5, ones, zeros)
+    target = torch.where(target > 0.9, ones, zeros)
 
     if torch.cuda.is_available():
         target = target.cuda()
 
     input = input.cpu()
-    input = torch.where(input > 0.5, ones, zeros)
+    input = torch.where(input > 0.9, ones, zeros)
     
     if torch.cuda.is_available():
         input = input.cuda()

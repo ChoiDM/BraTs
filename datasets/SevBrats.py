@@ -1,3 +1,4 @@
+import torch
 from torch.utils.data import Dataset
 
 import os
@@ -21,6 +22,8 @@ class SevBraTsDataset3D(Dataset):
         self.mean = np.array(opt.mean, dtype=np.float32)[:,None,None,None]
         self.std = np.array(opt.std, dtype=np.float32)[:,None,None,None]
 
+        self.is_Train = is_Train
+
     def __getitem__(self, index):
         # Patient Info
         patDir = self.patientDirs[index]
@@ -32,16 +35,14 @@ class SevBraTsDataset3D(Dataset):
         
         # Input Image (FLAIR, T1GD, T1, T2 order)
         imgs = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in img_paths]
-        imgs = [center_crop(img, self.in_res, self.in_res) for img in imgs]
-        imgs = [ResizeImage(img, (self.in_res, self.in_res, self.in_depth)) for img in imgs]
+        imgs = [ResizeImage(img, (self.in_depth, self.in_res, self.in_res)) for img in imgs]
         imgs = [img[None, ...] for img in imgs]
 
         # Ground-truth Masks (NECRO, CE, Peri order)
         masks = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in mask_paths]
-        masks = [center_crop(mask, self.in_res, self.in_res) for mask in masks]
-        masks = [ResizeImage(mask, (self.in_res, self.in_res, self.in_depth)) for mask in masks]
-        masks = [mask_binarization(mask) for mask in masks]
-        masks = [mask[None, ...] for mask in masks]
+        masks_cropped = [ResizeImage(mask, (self.in_depth, self.in_res, self.in_res)) for mask in masks]
+        masks_cropped = [mask_binarization(mask) for mask in masks_cropped]
+        masks_cropped = [mask[None, ...] for mask in masks_cropped]
 
         # Augmentation
         if self.augmentation:
@@ -52,12 +53,28 @@ class SevBraTsDataset3D(Dataset):
         imgs = imgs.astype(np.float32)
 
         # Stack masks
-        background_mask = np.ones_like(masks[0])
-        background_mask[(masks[0]==1) | (masks[1]==1) | (masks[2]==1)] = 0
-        masks = np.concatenate([background_mask]+masks, axis=0)
-        masks = masks.astype(np.float32)
+        background_mask = np.ones_like(masks_cropped[0])
+        background_mask[(masks_cropped[0]==1) | (masks_cropped[1]==1) | (masks_cropped[2]==1)] = 0
+        masks_cropped = np.concatenate([background_mask]+masks_cropped, axis=0)
+        masks_cropped = masks_cropped.astype(np.float32)
 
-        return imgs, masks
+        if self.is_Train :
+            return imgs, masks_cropped
+        
+        else:
+            # Stack original masks
+            masks = [mask_binarization(mask) for mask in masks]
+            masks = [mask[None, ...] for mask in masks]
+            masks_org = np.concatenate(masks, axis=0)
+            masks_org = masks_org.astype(np.float32)
+
+            org_size = torch.Tensor(masks[0].shape[1:])
+            patID = torch.Tensor([float(patID)])
+
+            meta = {'org_size' : org_size,
+                    'patientID' : patID}
+
+            return imgs, masks_cropped, masks_org, meta
         
     def __len__(self):
         return self.len
@@ -77,21 +94,27 @@ class SevBraTsDataset2D(Dataset):
         self.mean = np.array(opt.mean, dtype=np.float32)[:,None,None]
         self.std = np.array(opt.std, dtype=np.float32)[:,None,None]
 
+        self.is_Train = is_Train
+
     def __getitem__(self, index):
+        # Patient Info
+        slice_path = self.data_list[index]
+        patID = slice_path.split(os.sep)[-1].split('_')[0]
+
         # Load Slice Directory
-        slice_dict = np.load(self.data_list[index], allow_pickle=True).item()
+        slice_dict = np.load(slice_path, allow_pickle=True).item()
 
         # Input Image (FLAIR, T1GD, T1, T2 order)
         imgs = [slice_dict[img_type] for img_type in ['FLAIR', 'T1GD', 'T1', 'T2']]
-        imgs = [center_crop(img, self.in_res, self.in_res) for img in imgs]
+        imgs = [ResizeImage(img, (self.in_res, self.in_res)) for img in imgs]
         imgs = [img[None, ...] for img in imgs]
 
         # Ground-truth Masks (NECRO, CE, Peri order)
         masks = [slice_dict['%s_mask'%mask_type] for mask_type in ['ce', 'necro', 'peri']]
-        masks = [center_crop(mask, self.in_res, self.in_res) for mask in masks]
         masks = [mask_binarization(mask) for mask in masks]
         masks = [mask[None, ...] for mask in masks]
-
+        masks_cropped = [ResizeImage(mask, (self.in_res, self.in_res)) for mask in masks]
+        
         # Augmentation
         if self.augmentation:
             pass
@@ -100,13 +123,27 @@ class SevBraTsDataset2D(Dataset):
         imgs = (np.concatenate(imgs, axis=0) - self.mean) / self.std
         imgs = imgs.astype(np.float32)
 
-        # Stack masks
-        background_mask = np.ones_like(masks[0])
-        background_mask[(masks[0]==1) | (masks[1]==1) | (masks[2]==1)] = 0
-        masks = np.concatenate([background_mask]+masks, axis=0)
-        masks = masks.astype(np.float32)
+        # Stack cropped masks
+        background_mask = np.ones_like(masks_cropped[0])
+        background_mask[(masks_cropped[0]==1) | (masks_cropped[1]==1) | (masks_cropped[2]==1)] = 0
+        masks_cropped = np.concatenate([background_mask]+masks_cropped, axis=0)
+        masks_cropped = masks_cropped.astype(np.float32)
+        
+        if self.is_Train :
+            return imgs, masks_cropped
+        
+        else:
+            # Stack original masks
+            masks_org = np.concatenate(masks, axis=0)
+            masks_org = masks_org.astype(np.float32)
 
-        return imgs, masks
+            org_size = torch.Tensor(masks[0].shape[1:])
+            patID = torch.Tensor([float(patID)])
+
+            meta = {'org_size' : org_size,
+                    'patientID' : patID}
+
+            return imgs, masks_cropped, masks_org, meta
         
     def __len__(self):
         return self.len

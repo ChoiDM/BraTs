@@ -55,7 +55,7 @@ This python script generates ```ce_refined_mask.nii.gz``` and ```peri_mask.nii.g
 - Before 2D training, call ```python parsing_2D.py``` to parse 2D datasets, which generates ```2D_slice/``` directory in each patient directory.\
 To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_res 140```
 
-- To evaluate a network after training, call: ```python test.py --in_dim 2 --resume trained_weights.pth```
+- To evaluate a network after training, call: ```python evaluate.py --in_dim 2 --resume trained_weights.pth```
 
 #### Pretrained Models
 Not released yet.
@@ -63,6 +63,6 @@ Not released yet.
 
 
 ## To do list
-- [ ] Release test code.
+- [x] Release test code.
 - [ ] Release pre-trained models.
 - [ ] Data Augmentation.

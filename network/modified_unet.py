@@ -30,14 +30,14 @@ class Modified3DUNet(nn.Module):
 		self.norm_lrelu_conv_c3 = self.norm_lrelu_conv(self.base_n_filter*4, self.base_n_filter*4)
 		self.norm_lrelu_conv_c3 = self.norm_lrelu_conv(self.base_n_filter*4, self.base_n_filter*4)
 		self.norm_lrelu_conv_c3 = self.norm_lrelu_conv(self.base_n_filter*4, self.base_n_filter*4)
-		self.gnorm3d_c3 = nn.GroupNorm(16, self.base_n_filter*4)
+		self.gnorm3d_c3 = nn.GroupNorm(self.base_n_filter, self.base_n_filter*4)
 
 		# Level 4 context pathway
 		self.conv3d_c4 = nn.Conv3d(self.base_n_filter*4, self.base_n_filter*8, kernel_size=3, stride=2, padding=1, bias=False)
 		self.norm_lrelu_conv_c4 = self.norm_lrelu_conv(self.base_n_filter*8, self.base_n_filter*8)
 		self.norm_lrelu_conv_c4 = self.norm_lrelu_conv(self.base_n_filter*8, self.base_n_filter*8)
 		self.norm_lrelu_conv_c4 = self.norm_lrelu_conv(self.base_n_filter*8, self.base_n_filter*8)
-		self.gnorm3d_c4 = nn.GroupNorm(16, self.base_n_filter*8)
+		self.gnorm3d_c4 = nn.GroupNorm(self.base_n_filter*2, self.base_n_filter*8)
 
 		# Level 5 context pathway, level 0 localization pathway
 		self.conv3d_c5 = nn.Conv3d(self.base_n_filter*8, self.base_n_filter*16, kernel_size=3, stride=2, padding=1, bias=False)
@@ -48,7 +48,7 @@ class Modified3DUNet(nn.Module):
 		self.norm_lrelu_upscale_conv_norm_lrelu_l0_2 = self.norm_lrelu_upscale_conv_norm_lrelu_2(self.base_n_filter*16, self.base_n_filter*8)
 
 		self.conv3d_l0 = nn.Conv3d(self.base_n_filter*8, self.base_n_filter*8, kernel_size = 1, stride=1, padding=0, bias=False)
-		self.gnorm3d_l0 = nn.GroupNorm(16, self.base_n_filter*8)
+		self.gnorm3d_l0 = nn.GroupNorm(self.base_n_filter*2, self.base_n_filter*8)
 
 		# Level 1 localization pathway
 		self.conv_norm_lrelu_l1 = self.conv_norm_lrelu(self.base_n_filter*16, self.base_n_filter*16)
@@ -81,12 +81,12 @@ class Modified3DUNet(nn.Module):
 	def conv_norm_lrelu(self, feat_in, feat_out):
 		return nn.Sequential(
 			nn.Conv3d(feat_in, feat_out, kernel_size=3, stride=1, padding=1, bias=False),
-			nn.GroupNorm(16, feat_out),
+			nn.GroupNorm(feat_out//2, feat_out),
 			nn.LeakyReLU())
 
 	def norm_lrelu_conv(self, feat_in, feat_out):
 		return nn.Sequential(
-			nn.GroupNorm(16, feat_in),
+			nn.GroupNorm(feat_in//2, feat_in),
 			nn.LeakyReLU(),
 			nn.Conv3d(feat_in, feat_out, kernel_size=3, stride=1, padding=1, bias=False))
 
@@ -97,14 +97,14 @@ class Modified3DUNet(nn.Module):
 
 	def norm_lrelu_upscale_conv_norm_lrelu_1(self, feat_in):
 		return nn.Sequential(
-			nn.GroupNorm(feat_in, feat_in),
+			nn.GroupNorm(feat_in//2, feat_in),
 			nn.LeakyReLU())
 
 	def norm_lrelu_upscale_conv_norm_lrelu_2(self, feat_in, feat_out):
 		return nn.Sequential(
 			# should be feat_in*2 or feat_in
 			nn.Conv3d(feat_in, feat_out, kernel_size=3, stride=1, padding=1, bias=False),
-			nn.GroupNorm(feat_in//2, feat_out),
+			nn.GroupNorm(feat_out//2, feat_out),
 			nn.LeakyReLU())
 
 	def forward(self, x):

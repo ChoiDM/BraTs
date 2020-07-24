@@ -26,8 +26,7 @@ def parse_option(print_option=True):
     p.add_argument('--trans_factor', default=0.05, type=float)
 
     # Input image
-    p.add_argument('--crop_size', default=180, type=int, help='center-cropping size before resizing')
-    p.add_argument('--in_res', default=160, type=int, help='input resolution using resize process (after center-cropping)')
+    p.add_argument('--in_res', default=200, type=int, help='input resolution using resize process (after center-cropping)')
     p.add_argument('--in_depth', default=128, type=int, help='number of 3D slices (only valid for 3D training)')
     p.add_argument('--mean', default=[75.48, 87.79, 92.07, 108.53], type=list, help='mean value of each input channel')
     p.add_argument('--std', default=[62.50, 66.89, 72.76, 90.76], type=list, help='std value of each input channel')
@@ -36,22 +35,22 @@ def parse_option(print_option=True):
     p.add_argument('--in_dim', default=2, type=int, help='dimension of input : 2(D) or 3(D)')
     p.add_argument('--in_channels', default=4, type=int, help='number of input channels (input image types)')
     p.add_argument('--n_classes', default=4, type=int, help='number of output channels (output mask types)')
-    p.add_argument('--base_n_filter', default=16, type=int)
+    p.add_argument('--base_n_filter', default=32, type=int)
 
     # Optimizer
     p.add_argument('--optim', default='Adam', type=str, help='RMSprop | SGD | Adam')
-    p.add_argument('--lr', default=1e-5, type=float)
-    p.add_argument('--lr_decay_epoch', default='40,50', type=str, help="cosine | decay epochs with comma (ex - '20,40,60')")
-    p.add_argument('--lr_warmup_epoch', default=5, type=int)
+    p.add_argument('--lr', default=1e-4, type=float)
+    p.add_argument('--lr_decay_epoch', default='10,15', type=str, help="cosine | decay epochs with comma (ex - '20,40,60')")
+    p.add_argument('--lr_warmup_epoch', default=3, type=int)
     p.add_argument('--eta_min_ratio', default=1e-2, type=float)
     p.add_argument('--momentum', default=0, type=float, help='momentum')
     p.add_argument('--wd', default=1e-5, type=float, help='weight decay')
     p.add_argument('--no_bias_decay', default='True', type=str2bool, help='weight decay for bias')
 
     # Hyper-parameter
-    p.add_argument('--batch_size', default=64, type=int, help='use 1 batch size in 3D training.')
+    p.add_argument('--batch_size', default=16, type=int, help='use 1 batch size in 3D training.')
     p.add_argument('--start_epoch', default=0, type=int)
-    p.add_argument('--max_epoch', default=60, type=int)
+    p.add_argument('--max_epoch', default=20, type=int)
 
     # Loss function
     p.add_argument('--loss', default='dice', type=str)
@@ -91,7 +90,7 @@ def parse_option(print_option=True):
         print('   Data root : %s' % (opt.data_root))
         print()
         print('   Data augmentation : %s' % (opt.augmentation))
-        print('   Data input size : Center-Crop %s -> Resize %s' % (opt.crop_size, opt.in_res))
+        print('   Data input size : Resized to (%s)' % ('%d,%d,%d'%(opt.in_res,opt.in_res,opt.in_depth) if opt.in_dim==3 else '%d,%d'%(opt.in_res,opt.in_res)))
         print()
         print('   Input Dimension : %dD' % (opt.in_dim))
         print('   Input Channels : %d' % (opt.in_channels))
