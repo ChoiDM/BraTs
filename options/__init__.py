@@ -46,6 +46,7 @@ def parse_option(print_option=True):
     p.add_argument('--momentum', default=0, type=float, help='momentum')
     p.add_argument('--wd', default=1e-5, type=float, help='weight decay')
     p.add_argument('--no_bias_decay', default='True', type=str2bool, help='weight decay for bias')
+    p.add_argument('--class_weights', default='1.0,1.0,1.0,1.0', type=str, help='class weights of loss function')
 
     # Hyper-parameter
     p.add_argument('--batch_size', default=16, type=int, help='use 1 batch size in 3D training.')
@@ -83,6 +84,9 @@ def parse_option(print_option=True):
     if ',' in opt.lr_decay_epoch:
         opt.lr_decay_epoch = opt.lr_decay_epoch.split(',')
         opt.lr_decay_epoch = [int(epoch) for epoch in opt.lr_decay_epoch]
+
+    opt.class_weights = opt.class_weights.split(',')
+    opt.class_weights = [float(weight) for weight in opt.class_weights]
 
     if print_option:
         print("\n==================================== Options ====================================\n")

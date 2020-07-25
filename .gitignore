@@ -1,6 +1,7 @@
 *.ipynb
 data/train
 data/valid
+data/test
 .DS_STORE
 __pycache__
 .ipynb_checkpoints

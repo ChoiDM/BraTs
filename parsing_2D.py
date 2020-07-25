@@ -22,6 +22,10 @@ for patDir in tqdm(patDirs):
         img_paths = [os.path.join(patDir, '%s_stripped.nii.gz'%img_type) for img_type in ['FLAIR', 'T1GD', 'T1', 'T2']]
         mask_paths = [os.path.join(patDir, '%s_mask.nii.gz'%mask_type) for mask_type in ['necro', 'ce_refined', 'peri']]
 
+        # Find 'ce.nii.gz' instead of 'ce_refined.nii.gz'
+        if not os.path.isfile(mask_paths[1]):
+            mask_paths[1] = mask_paths[1].replace('ce_refined', 'ce')
+
         # Input Image (FLAIR, T1GD, T1, T2 order)
         FLAIR, T1GD, T1, T2 = [sitk.GetArrayFromImage(sitk.ReadImage(path)) for path in img_paths]
 

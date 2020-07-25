@@ -35,7 +35,11 @@ def ResizeImage(img, new_shape):
     
     elif len(new_shape) == 2:
         if np.ndim(img) == 3:
-            return imresize(img[0], new_shape, mode='L')[None, ...]
+            if len(img) == 1:
+                return imresize(img[0], new_shape, mode='L')[None, ...]
+            else:
+                return np.moveaxis(imresize(img, new_shape), -1, 0)
+
         elif np.ndim(img) == 2:
             return imresize(img, new_shape, mode='L')
 
@@ -189,7 +193,7 @@ def mask_binarization(mask_array):
     
     return mask_binarized
 
-def refine_mask(necro_mask, ce_mask, peri_mask):
+def refine_mask(ce_mask, necro_mask, peri_mask):
     total_mask = ((necro_mask != 0) | (ce_mask != 0) | (peri_mask != 0)).astype(np.uint8)
     sum_mask = ((necro_mask != 0) | (ce_mask != 0)).astype(np.uint8)
     
@@ -209,7 +213,7 @@ def refine_mask(necro_mask, ce_mask, peri_mask):
     refined_ce_mask = sum_mask.copy()
     refined_ce_mask[necro_mask == 1] = 0
     
-    return necro_mask, refined_ce_mask, refined_peri_array
+    return refined_ce_mask, necro_mask, refined_peri_array
 
 def decode_preds(pred, meta=None, refine=True):
     batch_size = pred.size(0)
@@ -223,17 +227,17 @@ def decode_preds(pred, meta=None, refine=True):
         pred_bi = (pred[b].sigmoid() > 0.5).cpu().data.numpy()
         
         # Remove multi-class predicted pixels
-        pred_bg, pred_necro, pred_ce, pred_peri = pred_bi
-        # pred_peri[pred_bg == 1] = 0
+        pred_bg, pred_ce, pred_necro, pred_peri = pred_bi
+        pred_peri[pred_bg == 1] = 0
         
         if refine:
-            pred_necro, pred_ce, pred_peri = refine_mask(pred_necro, pred_ce, pred_peri)
+            pred_ce, pred_necro, pred_peri = refine_mask(pred_ce, pred_necro, pred_peri)
         else:
             pred_ce[pred_necro == 1] = 0
             pred_peri[(pred_necro == 1) | (pred_ce == 1)] = 0
         
         # Resize to Original Size
-        preds = [pred_necro, pred_ce, pred_peri]
+        preds = [pred_ce, pred_necro, pred_peri]
         if meta is not None:
             preds = [ResizeImage(pred, org_sizes[b]) for pred in preds]
 

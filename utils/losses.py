@@ -58,7 +58,7 @@ class DiceLoss(nn.Module):
 
         input = self.normalization(input)
         if self.weight is not None:
-            weight = Variable(self.weight, requires_grad=False)
+            weight = Variable(self.weight, requires_grad=False).to(input.device)
         else:
             weight = None
 

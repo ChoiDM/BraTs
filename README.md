@@ -69,6 +69,28 @@ To train a 2D network, call: ```python train.py --batch_size 1 --in_dim 2 --in_r
 
 - To evaluate a network after training, call: ```python evaluate.py --in_dim 2 --resume trained_weights.pth```
 
+- To inference a network, call: ```python inference.py --in_dim 2 --resume trained_weights.pth```\
+Note that the data composition must be as below and the generated masks are saved in each patient directory.\
+```
+data
+└─── test
+│    └─── patientDir001
+│    │    │   FLAIR_stripped.nii.gz
+│    │    │   T1GD_stripped.nii.gz
+│    │    │   T1_stripped.nii.gz
+│    │    │   T2_stripped.nii.gz
+│    │    │
+│    └─── patientDir002
+│    └─── patientDir003
+│    └─── ...
+```
+
+#### Performance
+|   Model   | Dice_Necro | Dice_CE | Dice_Peri | Dice_Total |
+| :-------: | :--------: | :-----: | :-------: | :--------: |
+| M-Unet 2D |   0.9427   |  0.9504 |   0.8833  |   0.9255   |
+| M-Unet 3D |            |         |           |            |
+
 #### Pretrained Models
 Not released yet.
 
@@ -77,4 +99,6 @@ Not released yet.
 ## To do list
 - [x] Release test code.
 - [x] Data Augmentation.
+- [x] Inference code which generates mask nifti files.
 - [ ] Release pre-trained models.
+- [ ] Additional evaluation metrics (Sensitivity, Specificity, Hausdorff95).
