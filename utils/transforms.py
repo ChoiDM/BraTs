@@ -25,7 +25,7 @@ def ResizeSitkImage(sitk_file, new_shape):
 def ResizeImage(img, new_shape):
     if len(new_shape) == 3:
         if type(img) is np.ndarray:
-            new_shape = (new_shape[1], new_shape[2], new_shape[0])
+            new_shape = (new_shape[2], new_shape[1], new_shape[0])
             img = sitk.GetImageFromArray(img)
             img_resized = ResizeSitkImage(img, new_shape)
             return sitk.GetArrayFromImage(img_resized)
