@@ -91,10 +91,13 @@ data
 | M-Unet 2D |   0.9427   |  0.9504 |   0.8833  |   0.9255   |
 | M-Unet 3D |            |         |           |            |
 
-#### Pretrained Models
-Not released yet.
+#### Pre-trained Models
+- Modified UNet 2D : [Google Drive Link](https://drive.google.com/file/d/1IhTiJCioBQudVW2zhsaD76MC9MwDTZ4H/view?usp=sharing)
+- Modified UNet 3D : Not released yet.
 
-
+#### Issue
+- In 2D training, the intensity scale of input images are changed by scipy resize function in range [0, 255].\
+The resize function should be replaced to keep the pixel value distribution.
 
 ## To do list
 - [x] Release test code.
