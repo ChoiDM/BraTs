@@ -96,8 +96,8 @@ data
 - Modified UNet 3D : Not released yet.
 
 #### Issue
-- In 2D training, the intensity scale of input images are changed by scipy resize function in range [0, 255].\
-The resize function should be replaced to keep the pixel value distribution.
+- In 2D training, the intensity scale of input images is changed by scipy resize function in range [0, 255].\
+The resize function should be replaced to keep the pixel value distribution. (Or the mean and std have to be re-calculated.)
 
 ## To do list
 - [x] Release test code.
