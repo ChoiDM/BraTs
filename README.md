@@ -17,7 +17,8 @@ Structure:
 - ```options/```: argument parser options
 - ```utils/```: image processing code, miscellaneous helper functions, and training/evaluation core code
 - ```train.py/```: code for model training
-- ```test.py/```: code for model evaluation
+- ```evaluate.py/```: code for model evaluation
+- ```inference.py/```: code for model inference to generate predicted mask nifti files.
 - ```preprocess_mask.py/```: code for pre-processing masks (refinement of ce mask and peri-tumoral mask generation)
 
 #### Dataset
