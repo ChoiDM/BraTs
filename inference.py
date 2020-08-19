@@ -37,7 +37,7 @@ if __name__ == "__main__":
     patList = glob(os.path.join(opt.data_root, 'test', '*'))
 
     # Inference
-    for patDir in tqdm(patList[48:]):
+    for patDir in tqdm(patList):
         # Load Image Paths
         img_paths = [os.path.join(patDir, '%s_stripped.nii.gz'%img_type) for img_type in ['FLAIR', 'T1GD', 'T1', 'T2']]
 
