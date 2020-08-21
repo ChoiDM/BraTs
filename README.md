@@ -1,5 +1,8 @@
 # Brain Tumor Segmentation
 
+
+## NOTE : This repository is not used anymore. Please check the latest code in [here](https://github.com/CCIDS/Brain-Tumor-Segmentation).
+
 ## Getting Started
 This repository provides everything necessary to train and evaluate a brain tumor segmentation model.\
 The baseline network is [Modified-UNet](https://github.com/pykao/Modified-3D-UNet-Pytorch).
